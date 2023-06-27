@@ -7,7 +7,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    
 #    - name: Install Node.js
 #      uses: actions/setup-node@v1
 #      with:
@@ -26,7 +26,7 @@ jobs:
 #        container: aluno01
 
   infra:
-    name: Terraform Infra
+    name: Terraform infra 
     name: Infra
     runs-on: ubuntu-latest
     environment: dev
