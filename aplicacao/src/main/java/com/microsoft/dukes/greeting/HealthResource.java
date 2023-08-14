@@ -13,6 +13,6 @@ public class HealthResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public DukesGreetingRecord sayHello() {
-        return new DukesGreetingRecord("Health check", LocalDate.now());
+        return new DukesGreetingRecord("Health check Hello World", LocalDate.now());
     }
 }
