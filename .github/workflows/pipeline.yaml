@@ -14,7 +14,12 @@ jobs:
     defaults:
       run:
         working-directory: ./infra
-
+    #env:
+    #  ARM_TENANT_ID: ${{ vars.AZURE_TENANT }}
+    #  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    #  ARM_CLIENT_ID: ${{ vars.AZURE_APPLICATION_ID }}
+    #  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      
     steps:
     # Clona o repositório
     - name: Checkout
@@ -39,6 +44,7 @@ jobs:
     # Importa o Resource Group da Azure para o Terraform
     - name: Terraform Import Resource Group
       run: terraform import -var='nome_resource_group=${{ vars.AZURE_RESOURCE_GROUP_ID }}' -var='nome_service_plan=${{ vars.AZURE_SERVICE_PLAN_NAME }}' -var='nome_webapp=${{ vars.AZURE_WEBAPP_NAME }}' azurerm_resource_group.rg /subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.AZURE_RESOURCE_GROUP_ID }}
+    # continue-on-error: true
 
     # Importa o AppServicePlan da Azure para o Terraform (caso exista)
     - name: Terraform Import ASP
@@ -53,7 +59,7 @@ jobs:
     # Cria/Atualiza os recursos na Azure
     - name: Terraform Apply
       run: terraform apply -auto-approve -var='nome_resource_group=${{ vars.AZURE_RESOURCE_GROUP_ID }}' -var='nome_service_plan=${{ vars.AZURE_SERVICE_PLAN_NAME }}' -var='nome_webapp=${{ vars.AZURE_WEBAPP_NAME }}'
-
+      
   build:
     name: Build
     needs: infra
@@ -74,3 +80,11 @@ jobs:
           
       - name: Build with Maven
         run: mvn package
+
+      - name: Azure WebApp
+        uses: Azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: aplicacao/target/booty-duke-app-service-jar-with-dependencies.jar
+          
